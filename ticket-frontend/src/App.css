@@ -72,7 +72,6 @@ th { background-color: #f8f9fa; }
   background-color: #d13438;
 }
 
-/* Container for the entire screen to center the box */
 .auth-wrapper {
   display: flex;
   justify-content: center;
@@ -81,7 +80,6 @@ th { background-color: #f8f9fa; }
   background-color: #f0f2f5;
 }
 
-/* The actual Card box */
 .auth-card {
   background: white;
   padding: 40px;
@@ -113,7 +111,6 @@ th { background-color: #f8f9fa; }
   text-decoration: underline;
 }
 
-/* Style for the Select dropdown in Register */
 .auth-card select {
   cursor: pointer;
   background-color: #fff;

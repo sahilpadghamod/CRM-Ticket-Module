@@ -109,17 +109,14 @@ if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'update_
     else response(false, "Update failed");
 }
 
-// 7. DELETE TICKET (Soft Delete - Author Only)
 if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'delete_ticket') {
     $ticketId = $input['id'];
     $role = $input['role'];
 
-    // Security Check: Only Authors can delete
     if ($role !== 'author') {
         response(false, "Unauthorized: Only Authors can delete tickets.");
     }
 
-    // Perform Soft Delete (Update timestamp)
     $stmt = $conn->prepare("UPDATE tickets SET deleted_at = NOW() WHERE id = ?");
     $stmt->bind_param("i", $ticketId);
 
