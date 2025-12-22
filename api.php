@@ -62,16 +62,22 @@ if ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'all_user
 if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'delete_user') {
     $id = $input['id'];
 
-    $delTickets = $conn->prepare("DELETE FROM tickets WHERE assigned_to = ? OR created_by = ?");
-    $delTickets->bind_param("ii", $id, $id);
-    $delTickets->execute();
-    $delTickets->close();
+    $checkTickets = $conn->prepare("SELECT COUNT(*) as ticket_count FROM tickets WHERE (assigned_to = ? OR created_by = ?) AND deleted_at IS NULL");
+    $checkTickets->bind_param("ii", $id, $id);
+    $checkTickets->execute();
+    $result = $checkTickets->get_result();
+    $row = $result->fetch_assoc();
+    $checkTickets->close();
+
+    if ($row['ticket_count'] > 0) {
+        response(false, "User has tickets, can't delete the user");
+    }
 
     $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        response(true, "User and their associated tickets deleted successfully");
+        response(true, "User deleted successfully");
     } else {
         response(false, "Could not delete user.");
     }
