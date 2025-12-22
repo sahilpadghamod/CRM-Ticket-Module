@@ -1,6 +1,10 @@
 <?php
 include 'db.php';
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json; charset=UTF-8");
+
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -45,6 +49,32 @@ if ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'users') 
     $users = [];
     while ($row = $result->fetch_assoc()) $users[] = $row;
     response(true, "Users fetched", $users);
+}
+
+if ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'all_users') {
+    $result = $conn->query("SELECT id, name, email, role FROM users");
+    $all_users = [];
+    while ($row = $result->fetch_assoc()) $all_users[] = $row;
+    
+    response(true, "All users fetched", $all_users);
+}
+
+if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'delete_user') {
+    $id = $input['id'];
+
+    $delTickets = $conn->prepare("DELETE FROM tickets WHERE assigned_to = ? OR created_by = ?");
+    $delTickets->bind_param("ii", $id, $id);
+    $delTickets->execute();
+    $delTickets->close();
+
+    $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+    $stmt->bind_param("i", $id);
+
+    if ($stmt->execute()) {
+        response(true, "User and their associated tickets deleted successfully");
+    } else {
+        response(false, "Could not delete user.");
+    }
 }
 
 if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'create_ticket') {
