@@ -116,6 +116,7 @@ const Dashboard = ({ user, setUser }) => {
             <th>Title</th>
             <th>File</th>
             <th>Status</th>
+            <th>{user.role === 'author' ? 'Assigned To' : 'Created By'}</th>
             <th>Created At</th>
             <th>Actions</th>
           </tr>
@@ -136,6 +137,10 @@ const Dashboard = ({ user, setUser }) => {
               <td>
                 <span className={`status-${ticket.status}`}>{ticket.status.toUpperCase()}</span>
               </td>
+
+                <td>{user.role === 'author' ? ticket.assigned_name : ticket.author_name}</td>
+
+
               <td style={{ fontSize: "12px" }}>
                 {formatDate(ticket.created_at)}
               </td>
